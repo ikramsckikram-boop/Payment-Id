@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran DANA QRIS</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary: #008FE5;
+            --primary-dark: #006FBA;
+            --secondary: #FF7A00;
+            --light: #F5F9FF;
+            --dark: #1A2B50;
+            --success: #28A745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: gradientBG 12s ease infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Container Styles */
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s linear infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        /* Content Styles */
+        .content {
+            padding: 25px;
+        }
+        
+        /* QRIS Section */
+        .qris-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .qris-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .qris-title {
+            font-size: 16px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .qris-img {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .qris-img:hover {
+            transform: scale(1.03);
+        }
+        
+        /* DANA Number Section */
+        .dana-section {
+            background: var(--light);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dana-section::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+        
+        .dana-title {
+            font-size: 15px;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .dana-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .dana-number:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: var(--primary);
+        }
+        
+        .dana-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .dana-copy:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .dana-copy:active {
+            transform: translateY(0);
+        }
+        
+        /* Button Styles */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 143, 229, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 143, 229, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 122, 0, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: #E56C00;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(255, 122, 0, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(0, 143, 229, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* Instructions */
+        .instructions {
+            background: var(--light);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions-title {
+            font-size: 16px;
+            color: var(--dark);
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions-list {
+            padding-left: 20px;
+        }
+        
+        .instructions-list li {
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 16px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header fade-in">
+            <h1>Pembayaran DANA QRIS</h1>
+            <p>Scan QR Code atau transfer manual</p>
+        </div>
+        
+        <div class="content">
+            <!-- QRIS Section -->
+            <div class="qris-section fade-in delay-1">
+                <div class="qris-title">Scan QR Code berikut:</div>
+                <img src="https://img1.pixhost.to/images/7804/630075353_ochobot.jpg" alt="QRIS DANA" class="qris-img">
+                <div class="qris-title">Menggunakan Aplikasi DANA</div>
+            </div>
+            
+            <!-- DANA Number Section -->
+            <div class="dana-section fade-in delay-1">
+                <div class="dana-title">Atau transfer manual ke nomor DANA:</div>
+                <div class="dana-number" id="danaNumber">088744307719</div>
+                <button class="dana-copy" onclick="copyDanaNumber()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Salin Nomor
+                </button>
+            </div>
+            
+            <!-- Buttons Section -->
+            <div class="fade-in delay-2">
+                <a href="https://dana.id" class="btn btn-primary" target="_blank">
+                    Buka Aplikasi DANA
+                </a>
+                
+                <a href="https://wa.me/6288744307719?text=Sudah%20transfer%20ke%20DANA%20088744307719" class="btn btn-secondary" target="_blank">
+                    Konfirmasi Pembayaran
+                </a>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions fade-in delay-3">
+                <div class="instructions-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    Cara Pembayaran
+                </div>
+                <ol class="instructions-list">
+                    <li>Buka aplikasi DANA di smartphone Anda</li>
+                    <li>Pilih menu "Bayar" atau "Transfer"</li>
+                    <li>Scan QR Code di atas atau masukkan nomor DANA</li>
+                    <li>Masukkan nominal pembayaran</li>
+                    <li>Konfirmasi dan selesaikan pembayaran</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="footer fade-in delay-3">
+            &copy; 2023 Pembayaran DANA QRIS
+        </div>
+    </div>
+    
+    <script>
+        // Copy DANA Number function
+        function copyDanaNumber() {
+            const danaNumber = document.getElementById('danaNumber');
+            const text = danaNumber.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Change button text temporarily
+                const button = document.querySelector('.dana-copy');
+                const originalText = button.innerHTML;
+                
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                    Tersalin!
+                `;
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
